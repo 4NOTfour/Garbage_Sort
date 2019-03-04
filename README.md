@@ -1,4 +1,4 @@
-# Reference Implementation: How-to Build a Face Access Control Solution
+# Reference Implementation: Garbage Detector
 
 | Details            |              |
 |-----------------------|---------------|
@@ -8,10 +8,9 @@
 
 ## What it Does
 
-The Face Access Control application is one of a series of IoT reference implementations aimed at instructing users on how to
-develop a working solution for a particular problem. The solution uses facial recognition as the basis of a control system
-for granting physical access. The application detects and registers the image of a person’s face into a database, recognizes
-known users entering a designated area and grants access if a person’s face matches an image in the database.
+The Garbage Detector application is one of a series of IoT reference implementations.
+This project uses object detection as a basis to identify potential waste among a group of objects.
+The application is trained using a dataset that consists of thousand of images that can be classified as garbage.
 
 From this reference implementation, developers will learn to build and run an application that:
  * Detects and registers the image of a person’s face into a database
