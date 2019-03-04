@@ -1,104 +1,137 @@
-# Garbage Detection with Intel® Tools and Technologies 
-This workshop will walk you through a computer vision workflow using the latest Intel® technologies and comprehensive toolkits including support for deep learning algorithms that help accelerate smart video applications. You will learn how to optimize and improve performance with and without external accelerators and utilize tools to help you identify the best hardware configuration for your needs. This workshop will also outline the various frameworks and topologies supported by Intel® accelerator tools. 
+# Reference Implementation: How-to Build a Face Access Control Solution
 
-## How to Get Started
-   
-> :warning: For the in-class training, the hardware and software setup part has already been done on the workshop hardware. In-class training participants should directly move to Workshop Agenda section. 
+| Details            |              |
+|-----------------------|---------------|
+| Target OS:            |  Ubuntu\* 16.04 LTS   |
+| Programming Language: |  C++ |
+| Time to Complete:    |  40min     |
 
-In order to use this workshop content, you will need to setup your hardware and install the Intel® Distribution of OpenVINO™ toolkit for infering your computer vision application.  
-### 1. Hardware requirements
-The hardware requirements are mentioned in the System Requirement section of the [install guide](https://software.intel.com/en-us/articles/OpenVINO-Install-Linux)
+## What it Does
 
-### 2. Operating System
-These labs have been validated on Ubuntu* 16.04 OS. 
+The Face Access Control application is one of a series of IoT reference implementations aimed at instructing users on how to
+develop a working solution for a particular problem. The solution uses facial recognition as the basis of a control system
+for granting physical access. The application detects and registers the image of a person’s face into a database, recognizes
+known users entering a designated area and grants access if a person’s face matches an image in the database.
 
-### 3. Software installation steps
-#### a). Install Intel® Distribution of OpenVINO™ toolkit 
-Use steps described in the [install guide](https://software.intel.com/en-us/articles/OpenVINO-Install-Linux)
-to install the Intel® Distribution of OpenVINO™ toolkit, configure Model Optimizer, run the demos, additional steps to install Intel® Media SDK and OpenCL™ mentioned in the the guide. 
+From this reference implementation, developers will learn to build and run an application that:
+ * Detects and registers the image of a person’s face into a database
+ * Recognizes known users entering a designated area
+ * Grants access if a person’s face matches an image in the database
 
-#### b). Install git, python libraries
-	sudo apt install git
-	sudo apt install python3-pip
-    
-#### c). Run the demo scipts and compile samples
-Delete $HOME/inference_engine_samples folder if it already exists. 
+## How it Works
 
-	rm -rf $HOME/inference_engine_samples
-	
-Run demo scripts (any one of them or both if you want to both the demos) which will generate the folder $HOME/inference_engine_samples with the current Intel® Distribution of OpenVINO™ toolkit built. 
+The Face Access Control system consists of two main subsystems:
 
-	cd /opt/intel/computer_vision_sdk/deployment_tools/demo
-	./demo_squeezenet_download_convert_run.sh
-	./demo_security_barrier_camera.sh
-	
-	sudo chown -R username.username $HOME/inference_engine_samples
-	cd $HOME/inference_engine_samples
-	make
-	
-#### d). Download models using model downloader scripts in Intel® Distribution of OpenVINO™ toolkit installed folder
-   - Install python3 (version 3.5.2 or newer) 
-   - Install yaml and requests modules with command:
+### cvservice
+ * [cvservice](./cvservice) is a C++ application that uses OpenVINO™. It connects to a
+   USB camera (for detecting faces) and then performs facial recognition based on a training data file of authorized users to
+   determine if a detected person is a known user or previously unknown. Messages are published to a MQTT\* broker when users
+   are recognized and the processed output frames are written to stdout in raw format (to be piped to ffmpeg for compression
+   and streaming). Here, Intel's Photography Vision Library is used for facial detection and recognition.
 
-	sudo -E pip3 install pyyaml requests
-   
-   - Run model downloader script to download example deep learning models
-  		
-	cd /opt/intel/computer_vision_sdk/deployment_tools/model_downloader
-	sudo python3 downloader.py --name mobilenet-ssd,ssd300,ssd512,squeezenet1.1
+### webservice
+ * [webservice](./webservice) uses the MQTT broker to interact with cvservice. It's an application based on Node.js\* for
+   providing visual feedback at the user access station. Users are greeted when recognized as authorized users or given the
+   option to register as a new user. It displays a high-quality, low-latency motion jpeg stream along with the user interface
+   and data analytics.
 
-#### e). Install Intel® System Studio, VNC viewer and Setup on development machine
+In the UI, there are three tabs:
+ * live streaming video
+ * user registration
+ * analytics of access history.
 
-Follow the [guide](./up2-vision-kit/setup_intel_system_studio.md) to install Intel® System Studio and VNC viewer on your development machine.
-	
-> :warning: This workshop content has been validated with Intel® Distribution of OpenVINO™ toolkit version R5 (computer_vision_sdk_2018.5.445). 
+This is what the live streaming video tab looks like:
 
-		
-## Workshop Agenda
-* **Smart Video/Computer Vision Tools Overview**
-  - Slides - [Introduction to Smart Video Tools](./presentations/01-Introduction-to-Intel-Smart-Video-Tools.pdf)
+![](./images/face-recognize.png)
 
-* **Training a Deep Learning Model**
-  - Slides - [Training a Deep Learning Model](./presentations/DL_training_model.pdf)
-  - Lab - [Training a Deep Learning Model](./dl-model-training/README.md)
-  
-* **Basic End to End Object Detection Inference Example**
-  - Slides - [Basic End to End Object Detection Example](./presentations/02-Basic-End-to-End-Object-Detection-Example.pdf)
-  - Lab - [Basic End to End Object Detection Example](./object-detection/README.md)
-  - Lab - [Tensor Flow example](./advanced-video-analytics/tensor_flow.md)
+This is what the user registration tab looks like:
 
-* **Hardware Heterogeneity**
-  - Lab - [Hardware Heterogeneity](./hardware-heterogeneity/README.md)
+![](./images/john-doe-directory.jpg)
 
-* **HW Acceleration with Intel® Movidius™ Neural Compute Stick**
-  - Lab - [HW Acceleration with Intel® Movidius™ Neural Compute Stick](./HW-Acceleration-with-Movidious-NCS/README.md) 
-  
-* **FPGA Inference Accelerator**
-  - Slides - [HW Acceleration with Intel® FPGA](./presentations/04-HW-Acceleration-with-FPGA.pdf)
+This is an example of the analytics tab:
 
-* **Optimization Tools and Techniques** 
-  - Slides - [Optimization Tools and Techniques](/presentations/04_05_Optimization_and_advanced_analytics.pdf)
-  - Lab 1 - [Optimization Tools and Techniques](./optimization-tools-and-techniques/README.md)
-  - Lab 2- [Intel® VTune™ Amplifier tutorial](./optimization-tools-and-techniques/README_VTune.md)
-  
-* **Advanced Video Analytics**
-  - Lab - [Multiple models usage example](./advanced-video-analytics/multiple_models.md)
-  
-* **UP²\* AI Vision Development kit as Edge**
-  - Setup - [Development machine and Internet Connection Sharing](./up2-vision-kit/dev_machine_setup.md)
-  - Lab - [Interact face detection on UP2 kit using Intel® System Studio](./up2-vision-kit/interact-face-detection.md)
-  
-* **Additional Examples - Reference Implementations**
-  - Industrial 
-  	- [Safety Gear Detection](./safety-gear-example/README.md)
-	- [Restricted Zone Notifier](https://github.com/intel-iot-devkit/restricted-zone-notifier-cpp)
-  	- [Object Size Detector](https://github.com/intel-iot-devkit/object-size-detector-cpp)
-  - Retail 
-  	- [Store Traffic Monitor](https://github.com/intel-iot-devkit/store-traffic-monitor)
-	- [Shopper Gaze Monitor](https://github.com/intel-iot-devkit/shopper-gaze-monitor-cpp)
-  
-> #### Disclaimer
+![](./images/analytics-screenshot.jpg)
 
-> Intel and the Intel logo are trademarks of Intel Corporation or its subsidiaries in the U.S. and/or other countries. 
- 
-> *Other names and brands may be claimed as the property of others
+## Requirements
+### Hardware
+
+ * 5th Generation Intel® Core™ processor or newer *or* Intel® Xeon® v4, or Intel® Xeon® v5 Processors with Intel® Graphics Technology (if enabled by OEM in BIOS and motherboard)
+[[tested on NUC6i7KYK](https://www.intel.com/content/www/us/en/products/boards-kits/nuc/kits/nuc6i7kyk.html)]
+ * USB Webcam [tested with Logitech\* C922x Pro Stream]
+
+### Software
+ * Ubuntu\* 16.04
+ * [OpenVINO™ toolkit](https://software.intel.com/en-us/computer-vision-sdk)
+
+## How to set up
+
+### OpenVINO™ toolkit
+
+#### Download and Install OpenVINO™ toolkit
+
+The guide for installing OpenVINO™ is offered [here](https://software.intel.com/en-us/articles/CVSDK-Install-Linux).
+After completing the registration, download the archive for Ubuntu\*, unpack it, and run the GUI installer:
+
+    tar xaf l_intel_cv_sdk_p_<version>.tgz
+    cd l_intel_cv_sdk_p_<version>
+    ./install_GUI.sh
+
+When prompted, install as the root user or as a user with root permissions. The rest of the guide assumes you will install OpenVINO™ to the default location.
+
+After installation, don't forget to source the OpenVINO™ environment variables:
+
+    source /opt/intel/computer_vision_sdk/bin/setupvars.sh
+
+This will be required for building and running cvservice.
+To automate this process, you can source the script from `.profile` or `.bashrc`. Alternatively, you can add the variables to
+`/etc/environment`.
+
+### ffmpeg
+
+This reference implementation uses ffmpeg to compress and stream video output from cvservice to the webservice clients. ffmpeg
+is installed separately from the Ubuntu repositories:
+
+    sudo apt update
+    sudo apt install ffmpeg
+
+### cvservice
+
+#### Install Paho\* MQTT\* C client libraries dependencies
+This reference implementation uses MQTT to send data between services. To install the dependencies:
+
+    sudo apt update
+    sudo apt install libssl-dev
+
+Building the executable (from cvservice directory):
+
+    mkdir build
+    cd build
+    cmake ..
+    make
+
+### webservice
+
+Instructions on how to setup the Node.js services are provided in the [webservice](./webservice) folder.
+
+## Running the application
+
+1. Start the webservice, both server and front-end components.
+
+2. Start ffserver with:
+
+        sudo ffserver -f ./ffmpeg/server.conf
+
+3. Export the needed ENV vars:
+
+        export MQTT_SERVER=localhost:1883
+        export MQTT_CLIENT_ID=cvservice
+        export FACE_DB=./defaultdb.xml
+        export FACE_IMAGES=../../webservice/server/node-server/public/profile/
+
+4. From the `cvservice/build` directory start cvservice and pipe to ffmpeg:
+
+        ./cvservice 0 2>/dev/null | ffmpeg -f rawvideo -pixel_format bgr24 -video_size vga -i - http://localhost:8090/fac.ffm
+
+5. Browse to:
+
+        http://localhost:8080
