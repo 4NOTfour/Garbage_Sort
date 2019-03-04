@@ -13,10 +13,10 @@ This project uses object detection as a basis to identify potential waste among 
 The application is trained using a dataset that consists of thousand of images that can be classified as garbage.
 
 From this reference implementation, developers will learn to build and run an application that:
- * Detects and registers the image of a person’s face into a database
- * Recognizes known users entering a designated area
- * Grants access if a person’s face matches an image in the database
+ * Recognizes garbage among a group of other objects.
+ * Alerts the user if garbage is detected.
 
+<!--
 ## How it Works
 
 The Face Access Control system consists of two main subsystems:
@@ -50,6 +50,8 @@ This is what the user registration tab looks like:
 This is an example of the analytics tab:
 
 ![](./images/analytics-screenshot.jpg)
+
+-->
 
 ## Requirements
 ### Hardware
@@ -85,6 +87,7 @@ This will be required for building and running cvservice.
 To automate this process, you can source the script from `.profile` or `.bashrc`. Alternatively, you can add the variables to
 `/etc/environment`.
 
+<!--
 ### ffmpeg
 
 This reference implementation uses ffmpeg to compress and stream video output from cvservice to the webservice clients. ffmpeg
@@ -134,3 +137,4 @@ Instructions on how to setup the Node.js services are provided in the [webservic
 5. Browse to:
 
         http://localhost:8080
+-->
